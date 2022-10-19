@@ -76,8 +76,23 @@ IOReturn VoodooWMIController::message(UInt32 type, IOService* provider, void* ar
     int eventDataNum = 0;
     if (getEventData(notifyId, &eventData) != kIOReturnSuccess) {
         DEBUG_LOG("%s failed to get event data", getName());
-    } else if (OSNumber* eventID = OSDynamicCast(OSNumber, eventData)) {
-        eventDataNum = eventID->unsigned32BitValue();
+    }
+    else {
+        OSNumber* eventID = NULL;
+        if (OSNumber* number = OSDynamicCast(OSNumber, eventData)) {
+            eventID = OSDynamicCast(OSNumber, number);
+        }
+        else if (OSArray* array = OSDynamicCast(OSArray, eventData)) {
+            eventID = OSDynamicCast(OSNumber, array->getObject((0)));
+        }
+        else if (OSData* data = OSDynamicCast(OSData, eventData)) {
+            const char* bytes = (const char*) data->getBytesNoCopy();
+            eventData = OSNumber::withNumber(bytes[0],32);
+            eventID = OSDynamicCast(OSNumber, eventData);
+        }
+        if (eventID != NULL) {
+            eventDataNum = eventID->unsigned32BitValue();
+        }
     }
 
     WMIBlock* targetBlock = nullptr;
