@@ -227,7 +227,6 @@
 				7596CF522448AC9400333C46 /* Sources */,
 				7596CF532448AC9400333C46 /* Frameworks */,
 				7596CF542448AC9400333C46 /* Resources */,
-				75F35B87245D0C0700DD127F /* Linting */,
 				75F35B89245D274200DD127F /* Copy Files */,
 			);
 			buildRules = (
@@ -330,27 +329,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		75F35B87245D0C0700DD127F /* Linting */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = Linting;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "cpplint --recursive --filter=-build/header_guard,-whitespace/line_length,-runtime/int,-runtime/printf,-readability/casting,-legal/copyright --extensions=h,c,hpp,cpp,m ./\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		7596CF522448AC9400333C46 /* Sources */ = {
