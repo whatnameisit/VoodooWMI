@@ -74,11 +74,11 @@ IOReturn VoodooWMIController::message(UInt32 type, IOService* provider, void* ar
     UInt8 notifyId = *reinterpret_cast<unsigned*>(argument);
     OSObject* eventData = nullptr;
     int eventDataNum = 0;
+    OSNumber* eventID = NULL;
     if (getEventData(notifyId, &eventData) != kIOReturnSuccess) {
-        DEBUG_LOG("%s failed to get event data", getName());
+        DEBUG_LOG("%s failed to get event data\n", getName());
     }
     else {
-        OSNumber* eventID = NULL;
         if (OSNumber* number = OSDynamicCast(OSNumber, eventData)) {
             eventID = OSDynamicCast(OSNumber, number);
         }
@@ -87,8 +87,7 @@ IOReturn VoodooWMIController::message(UInt32 type, IOService* provider, void* ar
         }
         else if (OSData* data = OSDynamicCast(OSData, eventData)) {
             const char* bytes = (const char*) data->getBytesNoCopy();
-            eventData = OSNumber::withNumber(bytes[0],32);
-            eventID = OSDynamicCast(OSNumber, eventData);
+            eventID = OSNumber::withNumber(bytes[0],32);
         }
         if (eventID != NULL) {
             eventDataNum = eventID->unsigned32BitValue();
@@ -103,20 +102,20 @@ IOReturn VoodooWMIController::message(UInt32 type, IOService* provider, void* ar
         }
     }
     if (targetBlock == nullptr) {
-        DEBUG_LOG("%s::unknown event, no matched block found (NotifyID: 0x%02x, EventData: 0x%x)", getName(), notifyId, eventDataNum);
+        DEBUG_LOG("%s::unknown event, no matched block found (NotifyID: 0x%02x, EventData: 0x%x\n)", getName(), notifyId, eventDataNum);
         return kIOReturnSuccess;
     }
 
     char guid[37];
     wmi_gtoa(targetBlock->guid, guid);
-    DEBUG_LOG("%s event: GUID: %s, NotifyID: 0x%02x, EventData: 0x%x", getName(), guid, notifyId, eventDataNum);
+    DEBUG_LOG("%s event: GUID: %s, NotifyID: 0x%02x, EventData: 0x%x\n", getName(), guid, notifyId, eventDataNum);
 
     WMIEventHandler* handler = &handlerList[targetBlock - blockList];
     if (handler->action == nullptr) {
-        DEBUG_LOG("%s::unknown event, not registered", getName());
+        DEBUG_LOG("%s::unknown event, not registered\n", getName());
         return kIOReturnSuccess;
     }
-    handler->action(handler->target, targetBlock, eventData);
+    handler->action(handler->target, targetBlock, eventID);
 
     return kIOReturnSuccess;
 }
@@ -132,7 +131,7 @@ bool VoodooWMIController::loadBlocks() {
         return false;
     }
     int dataLength = blocksData->getLength();
-    DEBUG_LOG("%s::block size %d", getName(), dataLength);
+    DEBUG_LOG("%s::block size %d\n", getName(), dataLength);
     if (dataLength % sizeof(WMIBlock) != 0) {
         return false;
     }
@@ -181,7 +180,7 @@ bool VoodooWMIController::loadBlocks() {
                 char guid[37];
                 wmi_gtoa(block->guid, guid);
                 setEventEnable(guid, true);
-                DEBUG_LOG("%s::debug: enable event %s", getName(), guid);
+                DEBUG_LOG("%s::debug: enable event %s\n", getName(), guid);
             }
         }
     }
@@ -198,7 +197,7 @@ WMIBlock* VoodooWMIController::findBlock(const char* guid) {
             return block;
         }
     }
-    DEBUG_LOG("%s::block not found %s", getName(), guid);
+    DEBUG_LOG("%s::block not found %s\n", getName(), guid);
     return nullptr;
 }
 
